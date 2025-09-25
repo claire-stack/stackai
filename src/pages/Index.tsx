@@ -5,12 +5,14 @@ import TemplatesSection from "@/components/TemplatesSection";
 import BlogSection from "@/components/BlogSection";
 import PricingSection from "@/components/PricingSection";
 import Footer from "@/components/Footer";
+import ChatWindow from "@/components/ChatWindow";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
       <Navigation />
       <main>
+        <ChatWindow/>
         <HeroSection />
         <FeaturesSection />
         <TemplatesSection />

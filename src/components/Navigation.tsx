@@ -39,7 +39,7 @@ const Navigation = () => {
               <div className="w-4 h-4 bg-white rounded-sm"></div>
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              FlowForge
+              積木行銷 STACK AI
             </span>
           </div>
 

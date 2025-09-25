@@ -15,35 +15,34 @@ const HeroSection = () => {
           {/* Badge */}
           <div className="inline-flex items-center px-4 py-2 rounded-full glass border border-border/50 mb-8">
             <Zap className="w-4 h-4 mr-2 text-accent" />
-            <span className="text-sm font-medium">5000+ Workflow Templates</span>
+            <span className="text-sm font-medium">數位行銷業界 No.1</span>
           </div>
 
           {/* Main Headline */}
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
             <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent">
-              Automate Everything
+              精準行銷品牌
             </span>
             <br />
             <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Build Workflows Faster
+              用AI科技加速您的業務成長
             </span>
           </h1>
 
           {/* Description */}
           <p className="text-xl text-foreground/70 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Connect your apps and automate workflows with our powerful no-code platform. 
-            Build, deploy, and scale automation in minutes, not hours.
+            聊天機器人、內容生成、數據分析，一站式AI行銷解決方案，助您輕鬆提升品牌影響力與銷售業績。
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             <Button variant="accent" size="xl" className="group">
-              Start Building Free
+              免費試用
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button variant="glass" size="xl" className="group">
               <Play className="w-5 h-5 mr-2" />
-              Watch Demo
+              看看 Demo
             </Button>
           </div>
 

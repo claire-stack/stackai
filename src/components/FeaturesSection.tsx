@@ -66,20 +66,20 @@ const FeaturesSection = () => {
         <div className="text-center mb-16">
           <div className="inline-flex items-center px-4 py-2 rounded-full glass border border-border/50 mb-6">
             <Workflow className="w-4 h-4 mr-2 text-primary" />
-            <span className="text-sm font-medium">Powerful Features</span>
+            <span className="text-sm font-medium">n8n + AI 技術</span>
           </div>
           <h2 className="text-4xl md:text-6xl font-bold mb-6">
             <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
-              Everything you need to
+              您想得到的
             </span>
             <br />
             <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              automate workflows
+              自動化我們都能做到
             </span>
           </h2>
           <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
-            From simple task automation to complex business processes, 
-            FlowForge provides all the tools you need to succeed.
+            從內部例行工作優化，到自動化數位行銷養粉<br/>
+            用最少的成本擴大您的業務規模。
           </p>
         </div>
 

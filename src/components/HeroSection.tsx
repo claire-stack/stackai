@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Zap, Users, TrendingUp } from "lucide-react";
-import heroImage from "@/assets/hero-dashboard.jpg";
+import heroImage from "@/assets/aipoweredblog.png";
 
 const HeroSection = () => {
   return (
@@ -63,21 +63,21 @@ const HeroSection = () => {
                 <Users className="w-8 h-8 text-primary" />
               </div>
               <div className="text-3xl font-bold mb-2">50K+</div>
-              <div className="text-foreground/60">Active Users</div>
+              <div className="text-foreground/60">活躍客戶</div>
             </div>
             <div className="glass p-6 rounded-2xl border border-border/50">
               <div className="flex items-center justify-center mb-4">
                 <Zap className="w-8 h-8 text-accent" />
               </div>
               <div className="text-3xl font-bold mb-2">1M+</div>
-              <div className="text-foreground/60">Workflows Created</div>
+              <div className="text-foreground/60">累積案例</div>
             </div>
             <div className="glass p-6 rounded-2xl border border-border/50">
               <div className="flex items-center justify-center mb-4">
                 <TrendingUp className="w-8 h-8 text-primary" />
               </div>
               <div className="text-3xl font-bold mb-2">99.9%</div>
-              <div className="text-foreground/60">Uptime</div>
+              <div className="text-foreground/60">系統穩定</div>
             </div>
           </div>
         </div>

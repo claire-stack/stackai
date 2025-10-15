@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.README.md
+# Environment variables
+.env
+
+/generated/prisma

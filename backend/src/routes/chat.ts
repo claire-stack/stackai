@@ -1,55 +1,74 @@
 import express from "express";
 import { callOpenRouterStream } from "../services/openrouter";
 import modelMap from "../config/modelMap";
+import { handleChatStreamWithLogging } from "../services/chat"; // ✅ 新增這個 service
+import { log } from "console";
+import { authenticateJWT } from "../middleware/authenticateJWT"; // ✅ 你的 middleware 路徑
+import { checkDailyLimit } from "../services/checkDailyLimit"; // ✅ 或是 checkDailyLimitFactory
+import { Request, Response, Router } from "express";
+
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+  };
+}
 
 const router = express.Router();
 
-// POST /chat/:llm → 改成 SSE 串流
-router.post("/:llm", async (req, res, next) => {
-  const { llm } = req.params;
-  const { messages } = req.body;
-  const model = modelMap[llm];
-
-  console.log("[Chat Trigger]", llm, messages);
-
-  if (!model || !Array.isArray(messages)) {
-    return res.status(400).json({ error: "Invalid model or messages format" });
+router.post("/:llm", async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ error: "Unauthorized: user not found" });
   }
 
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-
-  try {
-    const stream = await callOpenRouterStream(model, messages);
-
-    stream.on("data", (chunk: Buffer) => {
-      const lines = chunk.toString().split("\n");
-      for (const line of lines) {
-        if (line.startsWith("data:")) {
-          const json = line.replace(/^data:\s*/, "");
-          if (json === "[DONE]") {
-            res.write(`event: done\ndata: [DONE]\n\n`);
-            res.end();
-          } else {
-            res.write(`data: ${json}\n\n`);
-          }
-        }
-      }
-    });
-
-    stream.on("end", () => {
-      res.end();
-    });
-
-    stream.on("error", (err: any) => {
-      console.error("[Stream Error]", err);
-      res.write(`event: error\ndata: ${err.message}\n\n`);
-      res.end();
-    });
-  } catch (err) {
-    next(err);
-  }
+  const userId = req.user.id;
+  // 你的邏輯...
 });
+
+router.post(
+  "/:llm",
+  authenticateJWT, // ✅ 第一步：驗證 JWT，注入 req.user
+  checkDailyLimit, // ✅ 第二步：檢查使用次數限制
+  async (req, res, next) => {
+    const { llm } = req.params;
+    const { messages } = req.body;
+    const model = modelMap[llm];
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized: user not found" });
+    }
+
+    const userId = req.user.id;
+
+    console.log("[Chat Trigger]", llm, messages);
+
+    if (!model || !Array.isArray(messages)) {
+      return res.status(400).json({ error: "Invalid model or messages" });
+    }
+
+    try {
+      await handleChatStreamWithLogging({ userId, model, messages, res });
+    } catch (err: any) {
+      console.error("[Route Error]", err);
+
+      // If setup failed, set HTTP 500 and send SSE error event
+      try {
+        if (!res.headersSent)
+          res
+            .status(500)
+            .json({ error: `OpenRouter stream failed: ${err.message}` });
+        else {
+          res.write(
+            `data: ${JSON.stringify({
+              error: `OpenRouter stream failed: ${err.message}`,
+            })}\n\n`
+          );
+          res.end();
+        }
+      } catch (e) {
+        // fallback
+        if (!res.headersSent) res.status(500).end();
+      }
+    }
+  }
+);
 
 export default router;

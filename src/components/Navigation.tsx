@@ -4,13 +4,14 @@ import { useRef, useState, useEffect } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { log } from "console";
 import { Link } from "react-router-dom";
+import { useUser } from "@/context/UserContext"; // 路徑依你的專案結構調整
 
 const Navigation = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 	const dropdownRefs = useRef<(HTMLDivElement | null)[]>([]);
-	const [isLogging, setIsLogging] = useState(false);
-	const [username, setUsername] = useState("");
+	// const [isLogging, setIsLogging] = useState(false);
+	// const [username, setUsername] = useState("");
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -33,23 +34,22 @@ const Navigation = () => {
 	const navItems = [
 		{
 			name: "首頁",
-			to: "#product",
+			to: "/",
 		},
 		{
 			name: "服務方案",
-			href: "/nav_pricng",
+			to: "/nav_pricing",
 		},
 		{
 			name: "AI模型",
-			href: "#templates",
 			hasDropdown: true,
 			dropdownItems: [
-				{ name: "OpenAI", href: "/model_OpenAI" },
-				{ name: "Claude", href: "/model_Claude" },
-				{ name: "Gemini", href: "/model_Gemini" },
-				{ name: "xAI", href: "/model_xAI" },
-				{ name: "Meta", href: "/model_Meta" },
-				{ name: "deepseek", href: "/model_deepseek" },
+				{ name: "OpenAI", to: "/model_OpenAI" },
+				{ name: "Claude", to: "/model_Claude" },
+				{ name: "Gemini", to: "/model_Gemini" },
+				{ name: "xAI", to: "/model_xAI" },
+				{ name: "Meta", to: "/model_Meta" },
+				{ name: "deepseek", to: "/model_deepseek" },
 			],
 		},
 		{
@@ -91,19 +91,31 @@ const Navigation = () => {
 		}
 	};
 
+	// const fetchUserInfo = async () => {
+	// 	const res = await fetch("http://localhost:8080/api/auth/me", {
+	// 		credentials: "include", // ✅ 附帶 cookie
+	// 	});
+	// 	console.log("查詢使用者結果:", res);
+
+	// 	const result = await res.json();
+	// 	if (result.user) {
+	// 		setIsLogging(true);
+	// 		setUsername(result.user.name);
+	// 	} else {
+	// 		setIsLogging(false);
+	// 		setUsername("");
+	// 	}
+	// };
+	const { user, setUser } = useUser(); // ✅ 使用 context
 	const fetchUserInfo = async () => {
 		const res = await fetch("http://localhost:8080/api/auth/me", {
-			credentials: "include", // ✅ 附帶 cookie
+			credentials: "include",
 		});
-		console.log("查詢使用者結果:", res);
-
 		const result = await res.json();
 		if (result.user) {
-			setIsLogging(true);
-			setUsername(result.user.name);
+			setUser(result.user); // ✅ 更新 context
 		} else {
-			setIsLogging(false);
-			setUsername("");
+			setUser(null);
 		}
 	};
 
@@ -129,24 +141,41 @@ const Navigation = () => {
 					{/* Desktop Navigation */}
 					{navItems.map((item, index) => (
 						<div key={item.name} className="relative">
-							<button
-								onClick={(e) => {
-									e.stopPropagation(); // 防止點擊觸發 document click
-									setActiveDropdown(
-										activeDropdown === item.name ? null : item.name
-									);
-								}}
-								className="flex items-center space-x-1 text-foreground/80 hover:text-foreground transition-colors"
-							>
-								<span>{item.name}</span>
-								{item.hasDropdown && (
+							{item.hasDropdown ? (
+								// Dropdown button
+								<button
+									onClick={(e) => {
+										e.stopPropagation();
+										setActiveDropdown(
+											activeDropdown === item.name ? null : item.name
+										);
+									}}
+									className="flex items-center space-x-1 text-foreground/80 hover:text-foreground transition-colors"
+								>
+									<span>{item.name}</span>
 									<ChevronDown
 										className={`w-4 h-4 transition-transform ${
 											activeDropdown === item.name ? "rotate-180" : ""
 										}`}
 									/>
-								)}
-							</button>
+								</button>
+							) : item.to ? (
+								// Regular nav tab with React Router
+								<Link
+									to={item.to}
+									className="flex items-center space-x-1 text-foreground/80 hover:text-foreground transition-colors"
+								>
+									<span>{item.name}</span>
+								</Link>
+							) : (
+								// Hash anchor fallback
+								<a
+									href={item.href}
+									className="flex items-center space-x-1 text-foreground/80 hover:text-foreground transition-colors"
+								>
+									<span>{item.name}</span>
+								</a>
+							)}
 
 							{item.hasDropdown &&
 								item.dropdownItems &&
@@ -156,14 +185,14 @@ const Navigation = () => {
 										className="absolute left-0 mt-2 w-48 bg-background border border-gray-50 rounded-md shadow-lg z-50"
 									>
 										{item.dropdownItems.map((subItem) => (
-											<a
+											<Link
 												key={subItem.name}
-												href={subItem.href}
+												to={subItem.to}
 												className="block px-4 py-2 text-sm text-white hover:bg-gray-100 hover:text-black transition-colors rounded-md"
 												onClick={() => setActiveDropdown(null)}
 											>
 												{subItem.name}
-											</a>
+											</Link>
 										))}
 									</div>
 								)}
@@ -172,8 +201,8 @@ const Navigation = () => {
 
 					{/* CTA Buttons */}
 					<div className="hidden md:flex items-center space-x-4">
-						{isLogging ? (
-							<span className="text-white font-medium">歡迎，{username}!</span>
+						{user ? (
+							<span className="text-white font-medium">歡迎，{user.name}!</span>
 						) : (
 							<GoogleLogin
 								onSuccess={handleGoogleLoginSuccess}

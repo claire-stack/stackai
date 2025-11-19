@@ -1,6 +1,6 @@
 // Map LLM name to OpenRouter model string
 const modelMap: Record<string, string> = {
-  OpenAI: "openai/gpt-5-nano",
+  OpenAI: "openai/gpt-4.1-nano",
   Claude: "anthropic/claude-3-haiku",
   Gemini: "google/gemini-flash-1.5-8b",
   xAI: "x-ai/grok-4-fast:free",

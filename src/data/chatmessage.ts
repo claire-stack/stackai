@@ -1,7 +1,8 @@
 export type ChatMessage = {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   source?: string;
   timestamp: number;
+  status?: "pending" | "streaming" | "success" | "error";
 };
